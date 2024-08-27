@@ -1,0 +1,8 @@
+Server commands
+  /help - print help message
+  /quit - quit server
+  /name [NAME] - change your name
+  /print - print all usernames
+  /join [ROOM_NAME] - join or create chat room
+  /rooms - list all chat rooms
+  /users - list all users in current room
