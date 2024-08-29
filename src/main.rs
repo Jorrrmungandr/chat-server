@@ -190,7 +190,8 @@ async fn handle_user(
     let mut stream = FramedRead::new(reader, LinesCodec::new());
     let mut sink = FramedWrite::new(writer, LinesCodec::new());
 
-    // assign each use a random name
+    sink.send("Welcome!").await?;
+    // assign each user a random name
     let mut name = names.get_unique();
     sink.send(format!("You are {name}")).await?;
     // sends help message as soon as users connect
@@ -233,11 +234,11 @@ async fn handle_user(
                         if new_room_name == room_name {
                             sink.send(format!("you are already in {room_name}")).await?;
                         } else {
-                            room_tx.send(format!("{name} left {room_name}"))?;
+                            room_tx.send(format!("{name} left {room_name} room"))?;
                             room_tx = rooms.change(&name, &room_name, &new_room_name);
                             room_rx = room_tx.subscribe();
                             room_name = new_room_name;
-                            room_tx.send(format!("{name} joined {room_name}"))?;
+                            room_tx.send(format!("{name} joined {room_name} room"))?;
                         }
                     } else if user_msg.starts_with("/name") {
                         // use `to_owned` to convert &str to String
@@ -256,7 +257,6 @@ async fn handle_user(
 
                 peer_msg = room_rx.recv() => {
                     sink.send(peer_msg?).await?;
-                    room_tx.send(format!("{name} left {room_name} room"))?;
                 },
             }
         };
